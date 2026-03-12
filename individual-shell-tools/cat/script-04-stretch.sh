@@ -3,8 +3,9 @@
 set -euo pipefail
 
 # NOTE: This is a stretch exercise - it is optional.
-cat ../helper-files/* | nl
+
 # TODO: Write a command to output the contents of all of the files in the helper-files directory to the terminal.
+cat ../helper-files/* | nl
 # We also want to see the line numbers in the output, but we want line numbers not to reset at the start of each file.
 #
 # The output of this command should be something like:
