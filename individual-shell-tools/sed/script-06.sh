@@ -3,6 +3,7 @@
 set -euo pipefail
 
 # TODO: Write a command to output input.txt with one fix:
+sed 's/,\([^ ]\)/, \1/g' input.txt
 # If a comma in input.txt is not followed by a space, add a space after.
 # If there is already a space after a comma, do not add an additional space.
 # The output should contain 11 lines.
