@@ -6,15 +6,17 @@ const args = process.argv.slice(2);
 
 let numberLines = false;
 let numberNonEmpty = false;
+let files = [];
 
-if (args[0] === "-n") {
+for (const arg of args) {
+if (arg === "-n") {
   numberLines = true;
-  args.shift();
-} else if (args[0] === "-b") {
+} else if (arg === "-b") {
   numberNonEmpty = true;
-  args.shift();
-}
-let count = 1;
+} else {
+  files.push(arg);
+}   
+};
 
 args.forEach((file) => {
   const content = fs.readFileSync(file, "utf-8");
