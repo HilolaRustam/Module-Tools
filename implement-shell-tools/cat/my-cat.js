@@ -8,36 +8,32 @@ let numberLines = false;
 let numberNonEmpty = false;
 let files = [];
 
+//Parse arguments
 for (const arg of args) {
-if (arg === "-n") {
-  numberLines = true;
-} else if (arg === "-b") {
-  numberNonEmpty = true;
-} else {
-  files.push(arg);
-}   
-};
+  if (arg === "-n") {
+    numberLines = true;
+  } else if (arg === "-b") {
+    numberNonEmpty = true;
+  } else {
+    files.push(arg);
+  }
+}
 
+//Process each files
 args.forEach((file) => {
   const content = fs.readFileSync(file, "utf-8");
   const lines = content.split(/\r?\n/);
-  
 
-  if (numberLines){ 
-    lines.forEach((line) => {
-      console.log(`${count} ${line}`);
-      count++;
-    });
-  } else if (numberNonEmpty){
-    lines.forEach((line) => {
-    if (line !== "") {
+  let count = 1;
+
+  lines.forEach((line) => {
+    const shouldNumber = numberLines || (numberNonEmpty && line !== "");
+
+    if (shouldNumber) {
       console.log(`${count} ${line}`);
       count++;
     } else {
-      console.log("");
+      console.log(line);
     }
   });
-} else {
-console.log(content);
-  }
 });
