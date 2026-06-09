@@ -21,11 +21,29 @@ function parseArgs(args) {
 function listDirectory(dirPath, showAll) {
   let files = fs.readdirSync(dirPath);
 
+  let hidden = [];
+  let normal = files;
+
   if (!showAll) {
-    files = files.filter(file => !file.startsWith("."));
+    normal = files.filter(file => !file.startsWith("."));
+  } else {
+    hidden = files.filter(file => file.startsWith("."));
+    normal = files.filter(file => !file.startsWith("."));
+    
   }
 
-  return files.sort();
+  normal.sort();
+  hidden.sort();
+  
+  let result = [];
+
+  if (showAll) {
+    result.push(".","..");
+  }
+  result.push (...normal, ...hidden);
+
+  return result; 
+ 
 }
 
 function main() {
