@@ -3,6 +3,12 @@
 const fs = require("node:fs");
 
 function countFile(filePath) {
+  const stats = fs.statSync(filePath);
+
+  if (!stats.isFile()) {
+    console.warn(`${filePath} is not a file, skipping`);
+    return null;
+  }
   const content = fs.readFileSync(filePath, "utf8");
 
   const lines = content.split("\n").length - 1;
@@ -15,49 +21,59 @@ function countFile(filePath) {
 function main() {
   const args = process.argv.slice(2);
 
-  let flag = null;
+  let flags = [];
   let files = [];
 
+  // 1 Parse args
   for (const arg of args) {
     if (arg === "-l" || arg === "-w" || arg === "-c") {
-      flag = arg;
+      flags.push(arg);
     } else {
       files.push(arg);
     }
   }
 
+  //2 Helper function that decides what to print
+
+  function formatOutput(counts, files) {
+    const parts = [];
+
+    // if no flags show everything
+    const showAll = flags.length === 0;
+
+    if (showAll || flags.includes("-l"))parts.push(counts.lines);
+    if (showAll || flags.includes("-w"))parts.push(counts.words);
+    if (showAll || flags.includes("-c"))parts.push(counts.chars);
+
+    parts.push(files);
+
+    return parts.join(" ");
+  }
+  // 3 totals
   let totalLines = 0;
   let totalWords = 0;
   let totalChars = 0;
 
+
+  // 4 per-file output
   for (const file of files) {
-    const { lines, words, chars } = countFile(file);
+    const counts = countFile(file);
+    if (!counts) continue;
 
-    totalLines += lines;
-    totalWords += words;
-    totalChars += chars;
+    totalLines += counts.lines;
+    totalWords += counts.words;
+    totalChars += counts.chars;
 
-    if (flag === "-l") {
-      console.log(`${lines} ${file}`);
-    } else if (flag === "-w") {
-      console.log(`${words} ${file}`);
-    } else if (flag === "-c") {
-      console.log(`${chars} ${file}`);
-    } else {
-      console.log(`${lines} ${words} ${chars} ${file}`);
-    }
+    console.log(formatOutput(counts, files));
   }
-
+  // 5 Total output (only if multiple files)
   if (files.length > 1) {
-    if (flag === "-l") {
-      console.log(`${totalLines} total`);
-    } else if (flag === "-w") {
-      console.log(`${totalWords} total`);
-    } else if (flag === "-c") {
-      console.log(`${totalChars} total`);
-    } else {
-      console.log(`${totalLines} ${totalWords} ${totalChars} total`);
-    }
+    const totalCounts = {
+      lines: totalLines,
+      words: totalWords,
+      chars: totalChars,
+    };
+    console.log(formatOutput(totalCounts,"total"));
   }
 }
 
