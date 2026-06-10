@@ -2,7 +2,7 @@
 
 import sys 
 import glob
-import os 
+
 
 def expand_paths(paths):
     """Expand glob patterns and return sorted unique file list."""
