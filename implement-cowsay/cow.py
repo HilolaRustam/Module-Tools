@@ -18,4 +18,8 @@ message = " ".join(args.message)
 
 animal = args.animal or "cow"
 
-print(getattr(cowsay, animal)(message))
+
+say_func = getattr(cowsay, animal)
+output = say_func(message)
+
+print(output)
