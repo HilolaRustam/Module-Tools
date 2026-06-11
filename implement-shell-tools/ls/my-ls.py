@@ -26,18 +26,24 @@ def main():
     had_error = False
 
     for path in paths:
-        if list_dir(path, show_all, one_per_line):
+        if list_dir(
+            path, 
+            show_all=show_all, 
+            one_per_line=one_per_line,
+        ):
             had_error = True
 
     if had_error:
        sys.exit(1)
        
        
-def list_dir(path, show_all=False, one_per_line = False):
+def list_dir(path, show_all=False, one_per_line=False):
     try:
         entries = os.listdir(path)
     except FileNotFoundError:
-        print(f"ls: cannot access '{path}': No such file or directory", file=sys.stderr)
+        print(f"ls: cannot access '{path}': No such file or directory", 
+              file=sys.stderr,
+        )
         return True
     
     entries = sorted(entries)
@@ -53,7 +59,7 @@ def list_dir(path, show_all=False, one_per_line = False):
     for entry in entries:
         print(entry)
 
-
+    return False
 
 if __name__ == "__main__":
     main()
