@@ -3,25 +3,7 @@
 import sys
 import os
 
-def list_dir(path, show_all=False, one_per_line = False):
-    try:
-        entries = os.listdir(path)
-    except FileNotFoundError:
-        print(f"ls: cannot access '{path}': No such file or directory", file=sys.stderr)
-        return
-    
-    entries = sorted(entries)
-    
-    if show_all:
-        normal = sorted([e for e in entries if not e.startswith('.')])
-        hidden = sorted([e for e in entries if e.startswith('.')])
-        
-        entries = [".", ".."] + normal + hidden
-    else:    
-        entries = sorted([e for e in entries if not e.startswith('.')])
 
-    for entry in entries:
-        print(entry)
 
 def main():
     args = sys.argv[1:]
@@ -41,8 +23,37 @@ def main():
     if not paths:
         paths = ["."]
 
+    had_error = False
+
     for path in paths:
-        list_dir(path, show_all, one_per_line)
+        if list_dir(path, show_all, one_per_line):
+            had_error = True
+
+    if had_error:
+       sys.exit(1)
+       
+       
+def list_dir(path, show_all=False, one_per_line = False):
+    try:
+        entries = os.listdir(path)
+    except FileNotFoundError:
+        print(f"ls: cannot access '{path}': No such file or directory", file=sys.stderr)
+        return True
+    
+    entries = sorted(entries)
+    
+    if show_all:
+        normal = sorted([e for e in entries if not e.startswith('.')])
+        hidden = sorted([e for e in entries if e.startswith('.')])
+        
+        entries = [".", ".."] + normal + hidden
+    else:    
+        entries = sorted([e for e in entries if not e.startswith('.')])
+
+    for entry in entries:
+        print(entry)
+
+
 
 if __name__ == "__main__":
     main()
