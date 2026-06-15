@@ -15,15 +15,7 @@ def count_file(path):
 
     return line_count, word_count, byte_count
 
-# def expand(paths):
-    files = []
-    for p in paths:
-        matches = glob.glob(p)
-        if matches:
-            files.extend(matches)
-        else:
-            files.append(p)
-    return files
+
 
 def main():
     args = sys.argv[1:]
