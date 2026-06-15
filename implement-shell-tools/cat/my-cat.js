@@ -18,22 +18,26 @@ for (const arg of args) {
     files.push(arg);
   }
 }
+let count = 1;
 
 //Process each files
-args.forEach((file) => {
+files.forEach((file) => {
   const content = fs.readFileSync(file, "utf-8");
   const lines = content.split(/\r?\n/);
-
-  let count = 1;
+  if (lines[lines.length - 1] == ""){lines.pop();
+  }
 
   lines.forEach((line) => {
-    const shouldNumber = numberLines || (numberNonEmpty && line !== "");
-
-    if (shouldNumber) {
-      console.log(`${count} ${line}`);
+    const shouldNumber = numberNonEmpty ? line !== "" : numberLines;
+    
+    if (numberNonEmpty && line === "") {
+      process.stdout.write("\n");
+    } else if (shouldNumber) {
+      process.stdout.write(`${String(count).padStart(6)}  ${line}\n`);
       count++;
     } else {
-      console.log(line);
-    }
+      process.stdout.write(`${line}\n`);
+    } 
+    
   });
 });
