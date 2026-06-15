@@ -1,59 +1,81 @@
-#!/usr/bin/env node 
+#!/usr/bin/env node
 
 const fs = require("node:fs");
 const path = require("node:path");
 
+function main() {
+  const args = process.argv.slice(2);
+
+  const {
+    showAll,
+    onePerLine,
+    targetDir,
+    unknownFlags
+  } = parseArgs(args);
+
+  if (unknownFlags.length > 0) {
+    console.error(
+      `warning: unknown option(s): ${unknownFlags.join(", ")}`
+    );
+  }
+
+  let files = readDirectory(targetDir);
+
+  files = applyFilters(files, showAll);
+  files = sortFiles(files);
+
+  const output = render(files, onePerLine);
+
+  console.log(output);
+}
+
+main();
+
 function parseArgs(args) {
   let showAll = false;
+  let onePerLine = false;
   let targetDir = ".";
+  const unknownFlags = [];
+
+  const knownFlags = new Set(["-a", "-1"]);
 
   for (const arg of args) {
-    if (arg === "-a") {
-      showAll = true;
-    } else if (!arg.startsWith("-")) {
+    if (knownFlags.has(arg)) {
+      if (arg === "-a") showAll = true;
+      if (arg === "-1") onePerLine = true;
+    } else if (arg.startsWith("-")) {
+      unknownFlags.push(arg);
+    } else {
       targetDir = arg;
     }
   }
 
-  return { showAll, targetDir };
+  return { showAll, onePerLine, targetDir, unknownFlags };
 }
 
-function listDirectory(dirPath, showAll) {
-  let files = fs.readdirSync(dirPath);
+function readDirectory(dir) {
+  return fs.readdirSync(dir);
+}
 
-  let hidden = [];
-  let normal = files;
-
+function applyFilters(files, showAll) { 
   if (!showAll) {
-    normal = files.filter(file => !file.startsWith("."));
-  } else {
-    hidden = files.filter(file => file.startsWith("."));
-    normal = files.filter(file => !file.startsWith("."));
-    
+    return files.filter(f => !f.startsWith("."));
   }
 
-  normal.sort();
-  hidden.sort();
-  
-  let result = [];
-
-  if (showAll) {
-    result.push(".","..");
+    return [".", "..", ...files];
   }
-  result.push (...normal, ...hidden);
-
-  return result; 
- 
+function sortFiles(files) {
+  return files.sort();
 }
 
-function main() {
-  const args = process.argv.slice(2);
-  const { showAll, targetDir } = parseArgs(args);
+function render(files, onePerLine) {
+  if (onePerLine) {
+    return files.join("\n");
+  }
 
-  const files = listDirectory(targetDir, showAll);
-  console.log(files.join("\n"));
+  // default format (simple column simulation)
+  return files.join("  ");
 }
 
-main();
 
 
