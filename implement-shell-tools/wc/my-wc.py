@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-import glob
+
 
 def count_file(path):
     with open(path, "rb") as f:
@@ -15,7 +15,7 @@ def count_file(path):
 
     return line_count, word_count, byte_count
 
-def expand(paths):
+# def expand(paths):
     files = []
     for p in paths:
         matches = glob.glob(p)
@@ -50,19 +50,24 @@ def main():
     if not (show_l or show_w or show_c):
         show_l = show_w = show_c = True
 
-    files = expand(paths)
+    files = paths
 
     total_l = 0
     total_w = 0
     total_c = 0
     
     results = []
+    had_error = False
     
     for file in files:
         try:
             l, w, c = count_file(file)
         except FileNotFoundError:
-            print(f"wc: {file}: No such file or directory", file=sys.stderr)
+            print(
+                f"wc: {file}: No such file or directory",
+                file=sys.stderr,
+            )
+            had_error = True
             continue
         
         total_l += l
@@ -85,7 +90,7 @@ def main():
 
         print("".join(parts) + " " + file)
         
-        # print total if multiple files
+    # print total if multiple files
     if len(results) > 1:
         parts = []
 
@@ -98,6 +103,9 @@ def main():
 
         
         print("".join(parts) + " total")
+        
+    if  had_error:
+        sys.exit(1)   
 
 
 if __name__ == "__main__":
