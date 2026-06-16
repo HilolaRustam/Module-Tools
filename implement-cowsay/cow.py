@@ -20,6 +20,5 @@ animal = args.animal or "cow"
 
 
 say_func = getattr(cowsay, animal)
-output = say_func(message)
+say_func(message)
 
-print(output)
