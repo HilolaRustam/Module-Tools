@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import sys 
-import glob
 
 def main():
     args = sys.argv[1:]
@@ -10,49 +9,33 @@ def main():
         print("Usage: cat [-n|-b] file...", file=sys.stderr)
         sys.exit(1)
         
-    number_all = False
-    number_nonempty = False
+    number_mode = "none"
     paths = []
     
     for a in args:
         if a == "-n":
-            number_all = True
+            number_mode = "all"
         elif a == "-b":
-            number_nonempty = True
+            number_mode = "non_empty"
         else:
             paths.append(a)
-            
-    if number_nonempty:
-        number_all = False        
-            
-    files = expand_paths(paths)
+    
+ 
     
     had_error = print_lines(
-        files, 
-        number_all=number_all,
-        number_nonempty=number_nonempty,
+        paths, 
+        number_mode=number_mode,
         )
 
     if had_error:
         sys.exit(1)
 
-    
-def expand_paths(paths):
-    """Expand glob patterns and return sorted unique file list."""
-    files = []
-    for p in paths:
-        matches = glob.glob(p)
-        if matches:
-            files.extend(matches)
-        else: 
-            files.append(p) # keep as-is (will error later if missing)
-    return sorted(files)
 
 def read_lines(file):
     with open(file, "r", encoding="utf-8") as f:
         return f.readlines()
        
-def print_lines(files, number_all=False, number_nonempty=False):
+def print_lines(files, number_mode="none"):
     had_error = False
     line_no = 1     
     for file in files:
@@ -66,13 +49,13 @@ def print_lines(files, number_all=False, number_nonempty=False):
         for line in lines:
             is_empty = (line.strip() == "")
             
-            if number_nonempty:
+            if number_mode == "non_empty":
                 if not is_empty:
                     prefix = f"{line_no:6}\t"
                     line_no += 1
                 else:
                     prefix = "" 
-            elif number_all:
+            elif number_mode=="all":
                 prefix = f"{line_no:6}\t"
                 line_no += 1
             else:
