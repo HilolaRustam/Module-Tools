@@ -31,10 +31,10 @@ print(person1.get_full_name())
 
 person2 = Parent("Elizaveta", "Alekseeva")
 print(person2.get_name())
-print(person2.get_full_name())
-person2.change_last_name("Tyurina")
+# print(person2.get_full_name())
+# person2.change_last_name("Tyurina")
 print(person2.get_name())
-print(person2.get_full_name())
+# print(person2.get_full_name())
 
 # person2 is a Parent. Parent only defines get_name(). 
 # It does not define get_full_name() or change_last_name(), 
